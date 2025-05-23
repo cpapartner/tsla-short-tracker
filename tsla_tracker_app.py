@@ -11,7 +11,7 @@ st.markdown("Tracks Tesla stock price alongside manually updated short interest 
 # Load manually updated short interest
 try:
     short_df = pd.read_csv("short_interest.csv")
-    short_df['Date'] = pd.to_datetime(short_df['Date'], errors='coerce')
+    short_df['Date'] = pd.to_datetime(short_df['Date'], errors='coerce').dt.date
     short_df.dropna(subset=['Date'], inplace=True)
 except Exception as e:
     st.error(f"Error loading short_interest.csv: {e}")
@@ -22,7 +22,7 @@ try:
     tsla = yf.Ticker("TSLA")
     price_data = tsla.history(period="3mo")
     price_data.reset_index(inplace=True)
-    price_data['Date'] = pd.to_datetime(price_data['Date'], errors='coerce')
+    price_data['Date'] = pd.to_datetime(price_data['Date'], errors='coerce').dt.date
     price_data.dropna(subset=['Date'], inplace=True)
 except Exception as e:
     st.error(f"Error loading TSLA price data: {e}")
