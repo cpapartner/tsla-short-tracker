@@ -8,7 +8,7 @@ st.set_page_config(page_title="TSLA Short Interest Tracker", layout="wide")
 st.title("Tesla (TSLA) Short Interest Tracker")
 st.markdown("Tracks Tesla stock price alongside manually updated short interest estimates.")
 
-# Load manually updated short interest (you can update this CSV via GitHub)
+# Load manually updated short interest
 try:
     short_df = pd.read_csv("short_interest.csv", parse_dates=["Date"])
 except FileNotFoundError:
@@ -20,8 +20,12 @@ tsla = yf.Ticker("TSLA")
 price_data = tsla.history(period="3mo")
 price_data.reset_index(inplace=True)
 
+# Ensure both Date columns are in datetime format
+price_data['Date'] = pd.to_datetime(price_data['Date'])
+short_df['Date'] = pd.to_datetime(short_df['Date'])
+
 # Merge price and short interest
-merged = pd.merge(price_data, short_df, how='left', left_on='Date', right_on='Date')
+merged = pd.merge(price_data, short_df, how='left', on='Date')
 merged['Short Interest'].fillna(method='ffill', inplace=True)
 
 # Plot
